@@ -1,5 +1,13 @@
 import pandas as pd
+import platform, matplotlib
+
+if platform.system() == "Darwin":  # macOS
+    matplotlib.use("TkAgg")  # 安全可视化
+else:
+    matplotlib.use("Agg")  # 服务器或 Linux 环境
+
 from matplotlib import pyplot as plt
+
 
 
 def test_model(model, env, n_episodes, n_steps, smoothing_window, fig_name):

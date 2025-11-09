@@ -1,6 +1,7 @@
 import csv
 import datetime
 import logging
+import os
 import time
 from statistics import mean
 
@@ -85,7 +86,7 @@ class Redis(gym.Env):
         # Deployment: Discrete 2 - Master[0], Slave[1]
         # Action: Discrete 9 - None[0], Add-1[1], Add-2[2], Add-3[3], Add-4[4],
         #                      Stop-1[5], Stop-2[6], Stop-3[7], Stop-4[8]
-
+        # 在这里定义动作空间
         self.action_space = spaces.MultiDiscrete([2, self.num_actions])
 
         # Observations: 22 Metrics! -> 2 * 11 = 22
@@ -107,6 +108,7 @@ class Redis(gym.Env):
         # Deployment Data
         self.deploymentList = get_redis_deployment_list(self.k8s, self.min_pods, self.max_pods)
 
+        # 在这里定义状态空间
         self.observation_space = self.get_observation_space()
 
         # Action and Observation Space
@@ -132,8 +134,8 @@ class Redis(gym.Env):
         self.episode_count = 0
         self.file_results = "results.csv"
         self.obs_csv = self.name + "_observation.csv"
-        self.df = pd.read_csv("../../datasets/real/" + self.deploymentList[0].namespace + "/v1/"
-                              + self.name + '_' + 'observation.csv')
+        base_path = os.getcwd()
+        self.df = pd.read_csv(os.path.join(base_path,"datasets","real",self.deploymentList[0].namespace,"v1",self.name + '_' + 'observation.csv'))
 
     def step(self, action):
         if self.current_step == 1:

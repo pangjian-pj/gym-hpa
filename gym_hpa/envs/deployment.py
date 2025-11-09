@@ -17,19 +17,18 @@ MEM_WEIGHT = 0.3
 PROMETHEUS_URL = 'http://localhost:9090/'
 
 # Endpoint of your Kube cluster: kube proxy enabled
-HOST = "http://localhost:8080"
+HOST = "https://127.0.0.1:55457"
 
 # TODO: Add the TOKEN from your cluster!
-TOKEN = ""
+TOKEN = "eyJhbGciOiJSUzI1NiIsImtpZCI6InE3Z2VXOU5adFRnUGlHcU1VWGtlb0tlZ1Y0bzgzaGs0dW1ieWowY0ZZczQifQ.eyJpc3MiOiJrdWJlcm5ldGVzL3NlcnZpY2VhY2NvdW50Iiwia3ViZXJuZXRlcy5pby9zZXJ2aWNlYWNjb3VudC9uYW1lc3BhY2UiOiJkZWZhdWx0Iiwia3ViZXJuZXRlcy5pby9zZXJ2aWNlYWNjb3VudC9zZWNyZXQubmFtZSI6Im15LWFkbWluLXRva2VuIiwia3ViZXJuZXRlcy5pby9zZXJ2aWNlYWNjb3VudC9zZXJ2aWNlLWFjY291bnQubmFtZSI6Im15LWFkbWluIiwia3ViZXJuZXRlcy5pby9zZXJ2aWNlYWNjb3VudC9zZXJ2aWNlLWFjY291bnQudWlkIjoiZTA4NjlmZDktZWU3YS00NjZiLWJhOTItZWI4OWFlZjUxMTAyIiwic3ViIjoic3lzdGVtOnNlcnZpY2VhY2NvdW50OmRlZmF1bHQ6bXktYWRtaW4ifQ.wUDIv-FeXH8dR09ML5MwCL4BW91op95FXjobGjIOEZU5yoam1beM2hEyncy8duPp5MjxWM3_5BCuuhoTNqe1my3iNPuRqraJ71NzoRiSphYx6usaGm7KOvt43LRtI_eLFBNIKi1hXPqeT76B3pN1ZDb_XSfDyPpkt_eWiF-tLSiIEojeE5oFK4ElEnb_c-JU9FP5UZno0yXZ-m0bXxQM-HiXNOtTPDKAMngoXGsJE2T-mCLkeRUjDWU-9C_BdhtCVEgm6OsDFjyO608rxLlAv5iVOVqBvTAwURcYsN4prJJ1j16BYFBvOU2HUbuXhXYeJhkB1M93M-oEvQ30-GTO2Q"
 
 
 def get_redis_deployment_list(k8s, min, max):
     deployment_list = [
-        DeploymentStatus(k8s, "redis-leader", "redis", "leader", "docker.io/redis:6.0.5",
-                         max, min, 250, 500, 250, 500),
-        DeploymentStatus(k8s, "redis-follower", "redis", "follower",
-                         "gcr.io/google_samples/gb-redis-follower:v2",
-                         max, min, 250, 500, 250, 500)]
+        DeploymentStatus(k8s, "redis-leader", "redis", "redis-master-0", "registry-1.docker.io/bitnami/redis:latest",
+                         max, min, 100, 500, 128, 256),
+        DeploymentStatus(k8s, "redis-follower", "redis", "redis-replicas-0", "registry-1.docker.io/bitnami/redis:latest",
+                         max, min, 100, 500, 128, 256)]
     return deployment_list
 
 
