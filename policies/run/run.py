@@ -1,5 +1,6 @@
+import json
 import logging
-import argparse
+from types import SimpleNamespace
 import os
 
 from setuptools.command.alias import alias
@@ -32,6 +33,7 @@ def get_model(alg, env, tensorboard_log):
 
 
 def get_load_model(alg, tensorboard_log, load_path):
+    print(f'begin loading model from {load_path}........')
     if alg == 'ppo':
         # 从磁盘中加载模型
         return PPO.load(load_path, reset_num_timesteps=False, verbose=1, tensorboard_log=tensorboard_log, n_steps=500)
@@ -44,10 +46,10 @@ def get_load_model(alg, tensorboard_log, load_path):
         logging.info('Invalid algorithm!')
 
 
-def get_env(use_case, k8s, goal):
+def get_env(use_case, k8s, goal, alg):
     env = 0
     if use_case == 'redis':
-        env = Redis(k8s=k8s, goal_reward=goal)
+        env = Redis(k8s=k8s, goal_reward=goal, alg=alg)
     elif use_case == 'online_boutique':
         env = OnlineBoutique(k8s=k8s, goal_reward=goal)
     else:
@@ -75,7 +77,7 @@ def main(args=None):
     steps = int(args.steps)
     total_steps = int(args.total_steps)
 
-    env = get_env(use_case, k8s, goal)
+    env = get_env(use_case, k8s, goal,alg)
 
     scenario = ''
     if k8s:
@@ -83,7 +85,7 @@ def main(args=None):
     else:
         scenario = 'simulated'
 
-    tensorboard_log = "../../results/" + use_case + "/" + scenario + "/" + goal + "/"
+    tensorboard_log = "results/" + use_case + "/" + scenario + "/" + goal + "/"
 
     name = alg + "_env_" + env.name + "_goal_" + goal + "_k8s_" + str(k8s) + "_totalSteps_" + str(total_steps)
 
@@ -110,20 +112,9 @@ if __name__ == "__main__":
     logging.basicConfig(filename='run.log', filemode='w', level=logging.INFO)
     logging.basicConfig(format='%(asctime)s %(message)s', datefmt='%m/%d/%Y %I:%M:%S %p')
 
-    parser = argparse.ArgumentParser(description='Run ILP!')
-    parser.add_argument('--alg', default='ppo', help='The algorithm: ["ppo", "recurrent_ppo", "a2c"]')
-    parser.add_argument('--k8s', default=True, action="store_true", help='K8s mode')
-    parser.add_argument('--use_case', default='redis', help='Apps: ["redis", "online_boutique"]')
-    parser.add_argument('--goal', default='cost', help='Reward Goal: ["cost", "latency"]')
+    config_file_path = os.path.join(os.path.dirname(__file__),'config.json')
+    with open(config_file_path, 'r') as f:
+        config_dict = json.load(f)
 
-    parser.add_argument('--training', default=True, action="store_true", help='Training mode')
-    parser.add_argument('--testing', default=True, action="store_true", help='Testing mode')
-    parser.add_argument('--loading', default=False, action="store_true", help='Loading mode')
-    parser.add_argument('--load_path', default='logs/model/test.zip', help='Loading path, ex: logs/model/test.zip')
-    parser.add_argument('--test_path', default='logs/model/test.zip', help='Testing path, ex: logs/model/test.zip')
-
-    parser.add_argument('--steps', default=500, help='The steps for saving.')
-    parser.add_argument('--total_steps', default=5000, help='The total number of steps.')
-
-    args = parser.parse_args()
+    args = SimpleNamespace(**config_dict)
     main(args)

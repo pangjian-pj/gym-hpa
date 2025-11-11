@@ -1,0 +1,13 @@
+{
+  "alg": "a2c",
+  "k8s": false,
+  "use_case": "redis",
+  "goal": "cost",
+  "training": true,
+  "testing": true,
+  "loading": false,
+  "load_path": "models/ppo_env_redis_gym_goal_cost_k8s_False_totalSteps_5000.zip",
+  "test_path": "models/a2c_env_redis_gym_goal_cost_k8s_False_totalSteps_5000.zip",
+  "steps": 500,
+  "total_steps": 5000
+}
